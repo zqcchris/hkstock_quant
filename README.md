@@ -21,8 +21,8 @@
 ## 使用方法
 nohup python3 example/hkstock/rank_service.py > hkstock.log 2>&1 &
 
-## 需要注意的是算法运行之前，需要在云端构建数据库环境
+## 云端构建数据库环境
 nohup python3 utils/mysql/connect.py > hkstock.log 2>&1 &
 
-## 同步行情，同步行情命令如下
+## 同步行情命令如下
 nohup python3 example/hkstock/market/dump_tdx.py > hkstock.log 2>&1 &
