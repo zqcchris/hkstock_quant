@@ -1,0 +1,30 @@
+# 在Linux终端中执行crontab -e，编辑定时任务，保存退出即可正常执行定时任务, Linux系统crontab的标准时间是UTC+0
+
+# 周一到周五，每天早上9点到15点之间，每隔5分钟同步一次5min、15min和30min级别的行情【注：只能5min同步一次，否则会系统崩溃】
+*/5 1-9 * * 1-5 sudo /usr/bin/python3 /home/ubuntu/quant_v23/examples/astock/sync/sync_efinance.py >>/home/ubuntu/sync.log;
+*/5 1-9 * * 1-5 sudo /usr/bin/python3 /home/ubuntu/quant_v23/examples/astock/sync/compositor.py >>/home/ubuntu/sync.log;
+
+# 部署在第一台服务器（46.250.249.171）上的定时任务，将行情同步到13.214.135.34数据库
+*/5 9-17 * * 1-5 flock -xn /tmp/hksync.lock sudo /usr/bin/python3 /root/quant_v24/examples/hkstock/sync/sync_efinance1.py >>/root/sync.log;
+
+# 部署在第二台服务器（46.250.249.172）上的定时任务，将行情同步到13.214.135.34数据库
+*/5 9-17 * * 1-5 flock -xn /tmp/hksync.lock sudo /usr/bin/python3 /root/quant_v24/examples/hkstock/sync/sync_efinance2.py >>/root/sync.log;
+
+# 部署在第三台服务器（46.250.253.191）上的定时任务，将行情同步到13.214.135.34数据库
+*/5 9-17 * * 1-5 flock -xn /tmp/hksync.lock sudo /usr/bin/python3 /home/ubuntu/quant_v24/examples/hkstock/sync/sync_efinance3.py >>/home/ubuntu/sync.log;
+
+# 在Linux终端中执行crontab -l可以查看当前用户的定时任务-CentOS
+$ sudo service crond start //启动服务
+$ sudo service crond stop //关闭服务
+$ sudo service crond restart //重启服务
+
+# 在Linux终端中执行crontab -l可以查看当前用户的定时任务-Ubuntu
+$ sudo service cron start //启动服务
+$ sudo service cron stop //关闭服务
+$ sudo service cron restart //重启服务
+
+# 如果cron不执行或其他报错，可以查看文件：/var/spool/mail/ubuntu，如果文件不存在，则安装邮件服务：sudo apt-get install -y postfix
+开启cron日志：
+    1、vim /etc/rsyslog.d/50-default.conf
+    2、service rsyslog restart
+    3、tail /var/log/cron.log
